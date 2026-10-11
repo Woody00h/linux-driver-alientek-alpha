@@ -1,0 +1,18 @@
+/* Include at the END of the board .dts, after imx6ull.dtsi. */
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	alpha_led: alpha-led {
+		compatible = "alientek,alpha-led";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_alpha_led>;
+		led-gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
+		status = "okay";
+	};
+};
+
+&iomuxc {
+	pinctrl_alpha_led: alpha-led-grp {
+		fsl,pins = <MX6UL_PAD_GPIO1_IO03__GPIO1_IO03 0x10b0>;
+	};
+};
