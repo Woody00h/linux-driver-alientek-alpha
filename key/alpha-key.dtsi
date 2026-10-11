@@ -1,0 +1,19 @@
+/* Include at the end of the board DTS, after imx6ull.dtsi. */
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	alpha_key: alpha-key {
+		compatible = "alientek,alpha-key";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_alpha_key>;
+		key-gpios = <&gpio1 18 GPIO_ACTIVE_LOW>;
+		status = "okay";
+	};
+};
+
+&iomuxc {
+	pinctrl_alpha_key: alpha-key-grp {
+		/* Hysteresis, 100K pull-up, pull enabled, GPIO input. */
+		fsl,pins = <MX6UL_PAD_UART1_CTS_B__GPIO1_IO18 0x1b0b0>;
+	};
+};
