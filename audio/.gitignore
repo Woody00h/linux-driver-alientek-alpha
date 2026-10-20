@@ -1,0 +1,17 @@
+*.o
+*.ko
+*.mod
+*.mod.c
+.*.cmd
+Module.symvers
+modules.order
+.tmp_versions/
+*.dtb
+audio_test
+audio_test_host
+audio_ctl
+audio_ctl_host
+sdma-imx6q.bin
+mic-review.wav
+mic4-boosted.wav
+mic4-boosted.pcm

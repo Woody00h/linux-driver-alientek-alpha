@@ -1,0 +1,88 @@
+// SPDX-License-Identifier: GPL-2.0
+/* Include at the end of the ALPHA board DTS, after imx6ull.dtsi. */
+/ {
+	alpha_audio_3v3: regulator-audio-3v3 {
+		compatible = "regulator-fixed";
+		regulator-name = "audio-3v3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+	alpha_audio_5v: regulator-audio-5v {
+		compatible = "regulator-fixed";
+		regulator-name = "audio-5v";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		regulator-always-on;
+	};
+	sound-alpha {
+		compatible = "alientek,alpha-wm8960";
+		model = "alpha-wm8960";
+		audio-cpu = <&sai2>;
+		audio-codec = <&alpha_wm8960>;
+		audio-routing =
+			"Headphone", "HP_L", "Headphone", "HP_R",
+			"Speaker", "SPK_LP", "Speaker", "SPK_LN",
+			"Speaker", "SPK_RP", "Speaker", "SPK_RN",
+			"Onboard Mic", "MICB",
+			"LINPUT1", "Onboard Mic", "LINPUT2", "Onboard Mic",
+			"RINPUT2", "Line In", "LINPUT3", "Line In";
+	};
+};
+
+&i2c1 {
+	clock-frequency = <100000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_alpha_i2c1>;
+	status = "okay";
+	alpha_wm8960: codec@1a {
+		compatible = "wlf,wm8960";
+		reg = <0x1a>;
+		#sound-dai-cells = <0>;
+		clocks = <&clks IMX6UL_CLK_SAI2>;
+		clock-names = "mclk";
+		/* ADCLRC is AUD_INT, not a second LRCLK: use DACLRC for both. */
+		wlf,shared-lrclk;
+		wlf,gpio-cfg = <1 0>;
+		AVDD-supply = <&alpha_audio_3v3>;
+		DBVDD-supply = <&alpha_audio_3v3>;
+		DCVDD-supply = <&alpha_audio_3v3>;
+		SPKVDD1-supply = <&alpha_audio_5v>;
+		SPKVDD2-supply = <&alpha_audio_5v>;
+	};
+};
+
+&sai2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_alpha_sai2>;
+	/*
+	 * Initialize the PLL before deriving MCLK. A bootloader-inherited PLL4
+	 * rate can be below the AV PLL's valid 27..54 x 24 MHz range; merely
+	 * requesting 12.288 MHz at SAI2 can preserve that invalid PLL state.
+	 * Use the i.MX6UL EVK audio root rate, then divide by 64 for MCLK.
+	 */
+	assigned-clocks = <&clks IMX6UL_CLK_PLL4_AUDIO_DIV>,
+			  <&clks IMX6UL_CLK_SAI2_SEL>, <&clks IMX6UL_CLK_SAI2>;
+	assigned-clock-parents = <0>, <&clks IMX6UL_CLK_PLL4_AUDIO_DIV>;
+	assigned-clock-rates = <786432000>, <0>, <12288000>;
+	fsl,sai-mclk-direction-output;
+	status = "okay";
+};
+
+&iomuxc {
+	pinctrl_alpha_i2c1: alpha-i2c1-grp {
+		fsl,pins = <
+			MX6UL_PAD_UART4_TX_DATA__I2C1_SCL 0x4001b8b0
+			MX6UL_PAD_UART4_RX_DATA__I2C1_SDA 0x4001b8b0
+		>;
+	};
+	pinctrl_alpha_sai2: alpha-sai2-grp {
+		fsl,pins = <
+			MX6UL_PAD_JTAG_TDI__SAI2_TX_BCLK 0x17088
+			MX6UL_PAD_JTAG_TDO__SAI2_TX_SYNC 0x17088
+			MX6UL_PAD_JTAG_TRST_B__SAI2_TX_DATA 0x11088
+			MX6UL_PAD_JTAG_TCK__SAI2_RX_DATA 0x11088
+			MX6UL_PAD_JTAG_TMS__SAI2_MCLK 0x17088
+		>;
+	};
+};
