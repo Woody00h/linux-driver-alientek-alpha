@@ -1,0 +1,21 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/* JP6 pin 20 = GPIO1_IO04, muxed to PWM3_OUT. */
+#include <dt-bindings/pwm/pwm.h>
+/ {
+	alpha_pwm: alpha-pwm {
+		compatible = "alientek,alpha-jp6-pwm";
+		pwms = <&pwm3 0 1000000 0>;
+	};
+};
+
+&pwm3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_alpha_pwm3>;
+	status = "okay";
+};
+
+&iomuxc {
+	pinctrl_alpha_pwm3: alpha-pwm3-grp {
+		fsl,pins = <MX6UL_PAD_GPIO1_IO04__PWM3_OUT 0x110b0>;
+	};
+};
