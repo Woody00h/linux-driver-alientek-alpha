@@ -1,0 +1,12 @@
+/build/
+/package/
+/alpha-wifi-arm.tar.gz
+/vendor/**/*.o
+/vendor/**/*.ko
+/vendor/**/*.mod
+/vendor/**/*.mod.c
+/vendor/**/.*.cmd
+/vendor/**/Module.symvers
+/vendor/**/modules.order
+/alpha-wifi-arm.tar.gz.sha256
+/vendor/fw/**/*.bin

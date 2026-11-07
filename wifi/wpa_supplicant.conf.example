@@ -1,0 +1,9 @@
+ctrl_interface=/run/wpa_supplicant
+country=CN
+
+# 将下面整个 network 块替换成 wpa_passphrase 生成的内容。
+network={
+    ssid="YOUR_2.4G_SSID"
+    psk="YOUR_WIFI_PASSWORD"
+    key_mgmt=WPA-PSK
+}
